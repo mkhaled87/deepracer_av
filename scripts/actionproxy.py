@@ -20,8 +20,8 @@ def action_proxy():
     publisher = rospy.Publisher('manual_drive', ServoCtrlMsg, queue_size=10)
     rospy.loginfo('waiting for a second to give th epublisher time to initialize.')
     rospy.sleep(1)
-
-    apply_actions(publisher, 1.0, 1.0)
+    rospy.loginfo('waiting for actions request.')
+    apply_actions(publisher, 0.0, 0.0)
     rospy.spin()
 
 if __name__ == '__main__':
