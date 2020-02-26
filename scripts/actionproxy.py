@@ -18,14 +18,13 @@ def apply_actions(pub, angle, throttle):
 def action_proxy():
     rospy.init_node('avdr_actionproxy', anonymous=False)
     publisher = rospy.Publisher('manual_drive', ServoCtrlMsg, queue_size=10)
-    rospy.loginfo('waiting for a second to give th epublisher time to initialize.')
+    rospy.loginfo('Waiting for a second to give th epublisher time to initialize.')
     rospy.sleep(1)
-    rospy.loginfo('waiting for actions request.')
+    rospy.loginfo('Waiting for actions requests.')
     apply_actions(publisher, 0.0, 0.0)
     rospy.spin()
 
 if __name__ == '__main__':
-    print('started')
     try:
         action_proxy()
     except rospy.ROSInterruptException:
