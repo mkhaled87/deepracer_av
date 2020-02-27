@@ -4,7 +4,7 @@ This repository will add some ROS nodes to control the AWS DeepRacer autonomousl
 
 Pre-installed AWS startup files load ROS components at boot time.  This setup does not mess with the pre-installed components, it only adds additional ROS nodes.  
 
-## Installation
+# Installation
 
 First, login to the DeepRacer through the ubuntu login form (or open an SSH session if you enabled SSH to the DeepRacer). In case you did not source the required parameters, run the following command:
 
@@ -31,6 +31,7 @@ Finally, build the package:
 ```bash
 chmod +rwx ~/catkin_ws/
 catkin_make
+catkin_make install
 ```
 
 
