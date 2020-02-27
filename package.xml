@@ -5,7 +5,7 @@
   <version>0.0.1</version>
   
   <description>
-    The ros-av-deepracer package is developed to control autonomously
+    The deepracer_av package is developed to control autonomously
     the Amazon AWS DeepRacer car. The car comes with ROS Kinict installed
     and some services/topics that are used by some nodes to load/apply 
     a neural-network model as a controller. Here, we make our own nodes
