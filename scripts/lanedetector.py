@@ -143,7 +143,7 @@ def get_two_lanes(image, turn_skew):
 
 def lane_detection_loop():
     rospy.init_node('avdr_lanedetector', anonymous=False)
-    pub = rospy.Publisher('road_lanes', RoadLanesInfo, queue_size=10)
+    pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
     rospy.loginfo('Waiting for a second to give th epublisher time to initialize.')
     rospy.sleep(1)
 
@@ -156,7 +156,17 @@ def lane_detection_loop():
     while not rospy.is_shutdown():
         _, image_rgb = video.read()
         has_left, has_right, left_lane, right_lane = get_two_lanes(image_rgb, 0.0)
-        pub.publish(has_left, has_right, left_lane, right_lane)
+        
+        msg = RoadLaneInfo()
+        msg.found_right_border = has_right
+        msg.found_left_border = has_left
+        msg.num_lanes = 1
+        msg.current_lane = 0
+        msg.lanes_start_offset = [0.0]
+        msg.line_right_border = right_lane
+        msg.line_left_border = left_lane
+
+        pub.publish(msg)
         rate.sleep()    
 
 if __name__ == '__main__':
