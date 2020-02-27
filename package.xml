@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros-av-deepracer</name>
+  <name>deepracer_av</name>
 
   <version>0.0.1</version>
   
