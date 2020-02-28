@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd scripts
-sudoo chmod +rwx *.py
+sudo chmod +rwx *.py
 
 cd ../../..
 catkin_make

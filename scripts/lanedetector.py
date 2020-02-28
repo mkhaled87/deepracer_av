@@ -4,6 +4,7 @@ import os
 import rospy
 import numpy
 import cv2
+from deepracer_av.msg import RoadLaneInfo
 
 # is a line defined with two points on the left side of an image
 # defined with a hight and width ?
@@ -144,10 +145,11 @@ def get_two_lanes(image, turn_skew):
 def lane_detection_loop():
     rospy.init_node('lanedetector', anonymous=False)
     pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
-    rospy.loginfo('Waiting for a second to give th epublisher time to initialize.')
+    rospy.loginfo('Waiting for a second to give the publisher time to initialize.')
     rospy.sleep(1)
 
     # open the capture stream
+    rospy.loginfo('Opening the video stream from first available device')
     video = cv2.VideoCapture(0)
 
     # continously capture fron images and detect lanes. We use a ccapture/process rate of
@@ -156,7 +158,7 @@ def lane_detection_loop():
     while not rospy.is_shutdown():
         _, image_rgb = video.read()
         has_left, has_right, left_lane, right_lane = get_two_lanes(image_rgb, 0.0)
-        
+        rospy.loginfo('got lanes !')
         msg = RoadLaneInfo()
         msg.found_right_border = has_right
         msg.found_left_border = has_left
