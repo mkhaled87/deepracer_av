@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <launch>
 
+  <!-- lanedetector --> 
+  <node name="lanedetector" pkg="deepracer_av" type="lanedetector.py" respawn="true"/>
+  
   <!-- action proxy --> 
   <node name="actionproxy" pkg="deepracer_av" type="actionproxy.py" respawn="true"/>
+
+  
 
 </launch>
