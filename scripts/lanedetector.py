@@ -142,7 +142,7 @@ def get_two_lanes(image, turn_skew):
 
 
 def lane_detection_loop():
-    rospy.init_node('avdr_lanedetector', anonymous=False)
+    rospy.init_node('lanedetector', anonymous=False)
     pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
     rospy.loginfo('Waiting for a second to give th epublisher time to initialize.')
     rospy.sleep(1)
