@@ -16,7 +16,7 @@ def apply_actions(pub, angle, throttle):
     rospy.loginfo('applied angle: %f ; throttle: %f' , angle, throttle)
 
 def action_proxy():
-    rospy.init_node('avdr_actionproxy', anonymous=False)
+    rospy.init_node('actionproxy', anonymous=False)
     publisher = rospy.Publisher('manual_drive', ServoCtrlMsg, queue_size=10)
     rospy.loginfo('Waiting for a second to give th epublisher time to initialize.')
     rospy.sleep(1)
