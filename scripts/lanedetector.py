@@ -59,9 +59,9 @@ def make_coordinates(height, width, line_slope_and_intercept):
 def mask_image(image, turn_skew):
     height = image.shape[0]
     width = image.shape[1]
-    polygons = numpy.array([view_mask(height, width, turn_skew)])
+    polygons = numpy.array([view_mask(height, width, turn_skew)], dtype=numpy.int32)
     mask = numpy.zeros_like(image)
-    cv2.fillPoly(mask, [polygons], 255)
+    cv2.fillPoly(mask, polygons, 255)
     masked_image = cv2.bitwise_and(mask,image)
     return masked_image
 
