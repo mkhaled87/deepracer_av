@@ -2,6 +2,6 @@
 <launch>
 
   <!-- action proxy --> 
-  <node name="actionproxy" pkg="ros-av-deepracer" type="actionproxy.py" respawn="true"/>
+  <node name="actionproxy" pkg="deepracer_av" type="actionproxy.py" respawn="true"/>
 
 </launch>
