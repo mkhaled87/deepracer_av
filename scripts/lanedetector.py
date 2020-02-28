@@ -61,7 +61,7 @@ def mask_image(image, turn_skew):
     width = image.shape[1]
     polygons = numpy.array([view_mask(height, width, turn_skew)])
     mask = numpy.zeros_like(image)
-    cv2.fillPoly(mask, polygons, 255)
+    cv2.fillPoly(mask, [polygons], 255)
     masked_image = cv2.bitwise_and(mask,image)
     return masked_image
 
