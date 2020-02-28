@@ -1,4 +1,7 @@
 Header header
+
+uint32 src_img_msg_seq
+
 bool found_right_border
 bool found_left_border
 

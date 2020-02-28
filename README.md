@@ -34,6 +34,8 @@ catkin_make
 catkin_make install
 ```
 
+All the above steps (after cloning) are automated in the script file **install.sh**. Again, the code in the automation script assumes that catkin workspace is located in the home directory.
+
 ## Starting this ROS package
 
 To start this package, we have a launch command to facilitate this:

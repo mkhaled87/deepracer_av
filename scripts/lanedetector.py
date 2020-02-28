@@ -150,6 +150,7 @@ def lane_detection_callback(data):
     has_left, has_right, left_lane, right_lane = get_two_lanes(image_rgb, 0.0)
 
     msg = RoadLaneInfo()
+    msg.src_img_msg_seq = data.header.seq
     msg.found_right_border = has_right
     msg.found_left_border = has_left
     msg.num_lanes = 1
