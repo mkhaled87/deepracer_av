@@ -4,6 +4,8 @@ import os
 import rospy
 import numpy
 import cv2
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 from deepracer_av.msg import RoadLaneInfo
 
 # is a line defined with two points on the left side of an image
@@ -142,37 +144,29 @@ def get_two_lanes(image, turn_skew):
     return has_left, has_right, left_lane.tolist(), right_lane.tolist()
 
 
-def lane_detection_loop():
-    rospy.init_node('lanedetector', anonymous=False)
-    pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
-    rospy.loginfo('Waiting for a second to give the publisher time to initialize.')
-    rospy.sleep(1)
+def lane_detection_callback(data):
 
-    # open the capture stream
-    rospy.loginfo('Opening the video stream from first available device')
-    video = cv2.VideoCapture(0)
+    image_rgb = bridge.imgmsg_to_cv2(data, "bgr8")
+    has_left, has_right, left_lane, right_lane = get_two_lanes(image_rgb, 0.0)
 
-    # continously capture fron images and detect lanes. We use a ccapture/process rate of
-    # 10hz (10 FPS) which can be achieved by the DeepRacer and saves time for others.
-    rate = rospy.Rate(10) 
-    while not rospy.is_shutdown():
-        _, image_rgb = video.read()
-        has_left, has_right, left_lane, right_lane = get_two_lanes(image_rgb, 0.0)
-        rospy.loginfo('got lanes !')
-        msg = RoadLaneInfo()
-        msg.found_right_border = has_right
-        msg.found_left_border = has_left
-        msg.num_lanes = 1
-        msg.current_lane = 0
-        msg.lanes_start_offset = [0.0]
-        msg.line_right_border = right_lane
-        msg.line_left_border = left_lane
+    msg = RoadLaneInfo()
+    msg.found_right_border = has_right
+    msg.found_left_border = has_left
+    msg.num_lanes = 1
+    msg.current_lane = 0
+    msg.lanes_start_offset = [0.0]
+    msg.line_right_border = right_lane
+    msg.line_left_border = left_lane
 
-        pub.publish(msg)
-        rate.sleep()    
+    road_lane_pub.publish(msg)
 
 if __name__ == '__main__':
     try:
-        lane_detection_loop()
+        bridge = CvBridge()
+        road_lane_pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
+        rospy.init_node('lanedetector', anonymous=False)
+        image_sub = rospy.Subscriber("video_mjpeg", Image, lane_detection_callback)
+        
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass    
