@@ -67,10 +67,10 @@ def visualize_lanes():
 def rospy_has_topic(topic):
     topics = rospy.get_published_topics()[0]
     for t in topics:
-        if(topic in t[0]):
+        if(topic in t):
             return True
-        else:
-            return False
+                
+    return False
 
 
 if __name__ == '__main__':
