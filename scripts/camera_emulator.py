@@ -13,6 +13,10 @@ def feed_generator():
     video_file = get_media_file()
     rospy.loginfo("Loading the media file " + video_file + " ...")
     video = cv2.VideoCapture(video_file)
+    if not video.isOpened():      
+        rospy.loginfo("Failed to open the media file.")
+        return
+    
     fps = video.get(cv2.CAP_PROP_FPS)
     frame_idx = 0
     rospy.loginfo("Starting the emulated camera stream and we publish to /video_mjpeg.")
