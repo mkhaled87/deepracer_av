@@ -15,7 +15,7 @@ def feed_generator():
     frame_idx = 0
     rospy.loginfo("Starting the emulated camera stream and we publish to /video_mjpeg.")
     rate = rospy.Rate(fps)
-    while(True):
+    while(not rospy.is_shutdown()):
         _, image_rgb = video.read()
         frame_idx = frame_idx + 1 
         if frame_idx == video.get(cv2.CAP_PROP_FRAME_COUNT):
