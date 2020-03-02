@@ -65,7 +65,7 @@ def visualize_lanes():
             lanes_mutex.release()
 
 def rospy_has_topic(topic):
-    topics = rospy.get_published_topics()[0]
+    topics = rospy.get_published_topics()
     for t in topics:
         if(topic in t):
             return True

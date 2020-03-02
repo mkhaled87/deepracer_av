@@ -30,7 +30,7 @@ def feed_generator():
         imagefeed_pub.publish(image_message)
 
 def rospy_has_topic(topic):
-    topics = rospy.get_published_topics()[0]
+    topics = rospy.get_published_topics()
     for t in topics:
         if(topic in t):
             return True
