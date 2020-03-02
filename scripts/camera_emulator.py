@@ -7,10 +7,10 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
 def get_media_file():
-    return "lanefollow_no_stoplines.mov"
+    return "media" + os.path.sep + "mp4" + os.path.sep + "lanefollow_no_stoplines.mp4"
 
 def feed_generator():
-    video_file = "media" + os.path.sep + get_media_file()
+    video_file = get_media_file()
     rospy.loginfo("Loading the media file " + video_file + " ...")
     video = cv2.VideoCapture(video_file)
     fps = video.get(cv2.CAP_PROP_FPS)
