@@ -39,28 +39,36 @@ def source_img_callback(data):
     return
 
 two_lanes = []
+OldLanes = False
 def detected_lanes_callback(data):
     global two_lanes
+    global OldLanes
     global lanes_detected
     global lanes_mutex    
     lanes_mutex.acquire()
     
+    OldLanes = False
+    
     if data.found_right_border:
         right_lane = data.line_right_border
     else:
+        OldLanes = True
         right_lane = data.line_latest_valid_right_border
         
     if data.found_left_border:
         left_lane = data.line_left_border
     else:
+        OldLanes = True
         left_lane = data.line_latest_valid_left_border
     
     two_lanes = numpy.array([left_lane, right_lane])
+    
     lanes_detected = True
     lanes_mutex.release()
     return 
 
 def visualize_lanes():
+    global OldLanes
     global image_detected
     global lanes_detected
     global img_mutex
@@ -73,7 +81,11 @@ def visualize_lanes():
             img_mutex.acquire()
             lanes_mutex.acquire()
 
-            image_combined = draw_lines(source_image, two_lanes, (0,255,0))
+            if OldLanes:
+                image_combined = draw_lines(source_image, two_lanes, (0,0,255))
+            else:
+                image_combined = draw_lines(source_image, two_lanes, (0,255,0))
+                
             cv2.imshow('laneviz', image_combined)
             cv2.waitKey(1)
 
