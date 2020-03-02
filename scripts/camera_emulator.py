@@ -8,7 +8,7 @@ def get_media_file():
     return "lanefollow_no_stoplines.mov"
 
 
-def wait_for_subscribers()
+def wait_for_subscribers():
     while imagefeed_pub.get_num_connections() < 1:
         # wait for a connection to publisher
         rospy.loginfo("Waiting for connection to publisher...")
