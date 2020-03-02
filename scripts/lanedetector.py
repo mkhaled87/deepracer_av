@@ -144,7 +144,12 @@ def get_two_lanes(image, turn_skew):
     return has_left, has_right, left_lane.tolist(), right_lane.tolist()
 
 
+line_latest_valid_right_border = []
+line_latest_valid_left_border = []
 def lane_detection_callback(data):
+
+    global line_latest_valid_right_border
+    global line_latest_valid_left_border
 
     image_rgb = bridge.imgmsg_to_cv2(data, "bgr8")
     has_left, has_right, left_lane, right_lane = get_two_lanes(image_rgb, 0.0)
@@ -158,6 +163,18 @@ def lane_detection_callback(data):
     msg.lanes_start_offset = [0.0]
     msg.line_right_border = right_lane
     msg.line_left_border = left_lane
+    
+    if has_right:
+        line_latest_valid_right_border = right_lane
+        msg.line_latest_valid_right_border = right_lane
+    else:
+        msg.line_latest_valid_right_border = line_latest_valid_right_border
+        
+    if has_left:
+        line_latest_valid_left_border = left_lane
+        msg.line_latest_valid_left_border = left_lane
+    else:
+        msg.line_latest_valid_left_border = line_latest_valid_left_border
 
     road_lane_pub.publish(msg)
 
