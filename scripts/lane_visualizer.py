@@ -43,7 +43,7 @@ def detected_lanes_callback(data):
     global lanes_detected
     lanes_mutex.acquire()
     right_lane = data.line_right_border
-    left_lane = data.line_left_border = left_lane
+    left_lane = data.line_left_border
     two_lanes = numpy.array([left_lane, right_lane])
     lanes_detected = True
     lanes_mutex.release()
