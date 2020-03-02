@@ -11,3 +11,6 @@ int8 current_lane
 float64[] lanes_start_offset
 float64[] line_right_border
 float64[] line_left_border
+
+float64[] line_latest_valid_right_border
+float64[] line_latest_valid_left_border
