@@ -75,6 +75,7 @@ def visualize_lanes():
 
             image_combined = draw_lines(source_image, two_lanes, (0,255,0))
             cv2.imshow('laneviz', image_combined)
+            cv2.waitKey(1)
 
             img_mutex.release()
             lanes_mutex.release()
