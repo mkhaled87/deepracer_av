@@ -31,6 +31,7 @@ source_image = []
 def source_img_callback(data):
     global source_image
     global image_detected
+    global img_mutex    
     img_mutex.acquire()
     source_image = bridge.imgmsg_to_cv2(data, "bgr8")
     image_detected = True
@@ -41,6 +42,7 @@ two_lanes = []
 def detected_lanes_callback(data):
     global two_lanes
     global lanes_detected
+    global lanes_mutex    
     lanes_mutex.acquire()
     right_lane = data.line_right_border
     left_lane = data.line_left_border
@@ -50,6 +52,10 @@ def detected_lanes_callback(data):
     return 
 
 def visualize_lanes():
+    global image_detected
+    global lanes_detected
+    global img_mutex
+    global lanes_mutex
     while(not rospy.is_shutdown()):
         if image_detected and lanes_detected:
             image_detected = False
