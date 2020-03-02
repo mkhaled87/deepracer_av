@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import rospy
 import cv2
@@ -30,6 +32,9 @@ def feed_generator():
 
 if __name__ == '__main__':
     try:
+        if('/video_mjpeg' in rospy.get_published_topics()[0]):
+            rospy.loginfo("Warning: The published /video_mjpeg is found. It looks like you are runnin on the AWS deepracer. This will conflect with the camera stream (unless disabled manually).")
+
         imagefeed_pub = rospy.Publisher('video_mjpeg', Image, queue_size=10)
         bridge = CvBridge()
         rospy.init_node('camera_emulator', anonymous=False)

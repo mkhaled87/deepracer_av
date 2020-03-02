@@ -163,9 +163,6 @@ def lane_detection_callback(data):
 
 if __name__ == '__main__':
     try:
-        if('/video_mjpeg' in rospy.get_published_topics()[0]):
-            rospy.loginfo("Warning: The published /video_mjpeg is found. It looks like you are runnin on the AWS deepracer. This will conflect with the camera stream (unless disabled manually).")
-
         bridge = CvBridge()
         road_lane_pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
         rospy.init_node('lanedetector', anonymous=False)
