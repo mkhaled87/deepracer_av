@@ -29,10 +29,17 @@ def feed_generator():
         rate.sleep()
         imagefeed_pub.publish(image_message)
 
+def rospy_has_topic(topic)
+    topics = rospy.get_published_topics()[0]
+    for t in topics:
+        if(topic in t[0]):
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     try:
-        if('/video_mjpeg' in rospy.get_published_topics()[0]):
+        if(rospy_has_topic('/video_mjpeg')):
             rospy.loginfo("Warning: The published /video_mjpeg is found. It looks like you are runnin on the AWS deepracer. This will conflect with the camera stream (unless disabled manually).")
 
         imagefeed_pub = rospy.Publisher('video_mjpeg', Image, queue_size=10)

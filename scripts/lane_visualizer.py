@@ -64,11 +64,19 @@ def visualize_lanes():
             img_mutex.release()
             lanes_mutex.release()
 
+def rospy_has_topic(topic)
+    topics = rospy.get_published_topics()[0]
+    for t in topics:
+        if(topic in t[0]):
+            return True
+        else:
+            return False
+
 
 if __name__ == '__main__':
     try:
-        topics = rospy.get_published_topics()[0]
-        if('/video_mjpeg' in topics  and '/road_lanes' in topics ):
+        
+        if(rospy_has_topic('/video_mjpeg') and rospy_has_topic('/road_lanes')):
             image_sub = rospy.Subscriber("video_mjpeg", Image, source_img_callback)
             lanes_sub = rospy.Subscriber("road_lanes", RoadLaneInfo, detected_lanes_callback)
             bridge = CvBridge()
