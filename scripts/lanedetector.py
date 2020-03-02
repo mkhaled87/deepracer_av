@@ -166,8 +166,9 @@ if __name__ == '__main__':
         bridge = CvBridge()
         road_lane_pub = rospy.Publisher('road_lanes', RoadLaneInfo, queue_size=10)
         rospy.init_node('lanedetector', anonymous=False)
-        image_sub = rospy.Subscriber("video_mjpeg", Image, lane_detection_callback)
-        
+        image_sub = rospy.Subscriber("video_mjpeg", Image, lane_detection_callback)        
+        rospy.loginfo("Started the lanedetector node. We wait for video frames from /video_mjpeg and publish detected lanes to /road_lanes.")
+
         rospy.spin()
     except rospy.ROSInterruptException:
         pass    

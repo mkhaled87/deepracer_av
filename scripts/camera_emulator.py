@@ -8,8 +8,8 @@ def get_media_file():
     return "lanefollow_no_stoplines.mov"
 
 def feed_generator():
-    rospy.loginfo("Loading the media file.")
     video_file = "media" + os.path.sep + get_media_file()
+    rospy.loginfo("Loading the media file " + video_file + " ...")
     video = cv2.VideoCapture(video_file)
     fps = video.get(cv2.CAP_PROP_FPS)
     frame_idx = 0
