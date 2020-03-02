@@ -45,12 +45,12 @@ def detected_lanes_callback(data):
     global lanes_mutex    
     lanes_mutex.acquire()
     
-    if data.has_right:
+    if data.found_right_border:
         right_lane = data.line_right_border
     else:
         right_lane = data.line_latest_valid_right_border
         
-    if data.has_left:
+    if data.found_left_border:
         left_lane = data.line_left_border
     else:
         left_lane = data.line_latest_valid_left_border
