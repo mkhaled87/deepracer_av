@@ -17,7 +17,7 @@ Now, navigate to it and clone this repo:
 
 ```bash
 cd ~/catkin_ws/src/
-git clone https://github.com/mkhaled87/deepracer_av.git
+git clone -–depth=1 https://github.com/mkhaled87/deepracer_av.git
 ```
 
 Make the python files executable and editable:
