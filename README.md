@@ -37,7 +37,13 @@ All the above steps (after cloning) are automated in the script file **install.s
 
 ## Starting this ROS package
 
-To start this package, we have a launch command to facilitate this:
+To make sure you already sourced your catkin workspace:
+
+```bash
+source ~/catkin_ws/devel/setup.bash
+```
+
+Then, use the launch command:
 
 ```bash
 roslaunch deepracer_av deepracer_av.launch
