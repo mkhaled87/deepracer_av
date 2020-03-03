@@ -45,3 +45,16 @@ roslaunch deepracer_av deepracer_av.launch
 ```
 
 All of the AWS pre-installed ROS code load at boot time so starting this package is the only thing necessary once the installation is done.
+
+
+## Working/Testing locally
+
+In case you dont have access to AWS DeepRacer or like to test locally, and assuming you have access to a machine
+with the same version of ROS installed, we created a node to emulated the camera and load recorded video streams
+for the sake of testing. Run the following command to start the camera emulator.
+
+```bash
+rosrun deepracer_av camera_emulator.py
+```
+
+The **camera_emulator.py** loads a video file from those in the folder [media/mp4/](/media/mp4/).
