@@ -29,7 +29,6 @@ chmod +rwx ~/catkin_ws/src/deepracer_av/scripts/*.py
 Finally, build the package:
 
 ```bash
-chmod +rwx ~/catkin_ws/
 catkin_make
 catkin_make install
 ```
