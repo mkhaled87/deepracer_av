@@ -1,4 +1,4 @@
-# AWD DeepRacer Autonomous Vehicle
+# AWD DeepRacer Autonomous Vehicle [under development]
 
 This repository will add some ROS nodes to control the AWS DeepRacer autonomously.
 
