@@ -51,6 +51,7 @@ find_package(catkin REQUIRED
 add_message_files(
    FILES
    RoadLaneInfo.msg
+   ControlInfo.msg
 )
 
 ## Generate services in the 'srv' folder

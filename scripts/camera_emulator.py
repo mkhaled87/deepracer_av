@@ -7,7 +7,8 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
 def get_media_file():
-    return "media" + os.path.sep + "mp4" + os.path.sep + "lanefollow_no_stoplines.mp4"
+    file_path = os.path.dirname(os.path.realpath(__file__)) + os.path.sep
+    return file_path + ".." + os.path.sep + "media" + os.path.sep + "mp4" + os.path.sep + "lanefollow_no_stoplines.mp4"
 
 def feed_generator():
     video_file = get_media_file()
