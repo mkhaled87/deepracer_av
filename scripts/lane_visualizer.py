@@ -9,6 +9,7 @@ from sensor_msgs.msg import Image
 from deepracer_av.msg import RoadLaneInfo
 from deepracer_av.msg import ControlInfo
 
+# from lane detector (perception)
 img_mutex = Lock()
 lanes_mutex = Lock()
 image_detected = False
@@ -17,6 +18,26 @@ source_image = []
 two_lanes = []
 OldLanes = False
 
+# from lane keeper (control)
+has_control = True
+control_mutex = Lock()
+center_line = []
+error_angle = 0
+error_crosstrack = 0
+control_value = 0
+
+
+# put text on image
+def put_text(image, text, pos_x, pos_y, color):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    org = (pos_x, pos_y)
+    fontScale = 0.7
+    # Line thickness of 2 px
+    thickness = 1
+
+    image = cv2.putText(image, text, org, font, fontScale, color, thickness, cv2.LINE_AA)
+
+    return image
 
 # plots lines on the image with some color
 def draw_lines(image, lines, color):
@@ -41,8 +62,22 @@ def source_img_callback(data):
 
 
 def control_callback(data):
-    print("Center Line: " + str(data.lane_center_line))
-    print("Angle: %2.2f,\tControl: %2.2f" %(data.error_angle, data.pid_control))
+    global has_control
+    global control_mutex
+    global center_line
+    global error_angle
+    global error_crosstrack
+    global control_value
+
+    control_mutex.acquire()
+
+    center_line = data.lane_center_line
+    error_angle = data.error_angle
+    error_crosstrack = data.error_crosstrack
+    control_value = data.pid_control
+    has_control = True
+
+    control_mutex.release()
     return
 
 
@@ -81,7 +116,18 @@ def visualize_lanes():
     global lanes_detected
     global img_mutex
     global lanes_mutex
+
+    global has_control
+    global control_mutex
+    global center_line
+    global error_angle
+    global error_crosstrack
+    global control_value
+
     while(not rospy.is_shutdown()):
+        needs_refresh = False
+        image_combined = source_image
+
         if image_detected and lanes_detected:
             image_detected = False
             lanes_detected = False
@@ -90,15 +136,46 @@ def visualize_lanes():
             lanes_mutex.acquire()
 
             if OldLanes:
-                image_combined = draw_lines(source_image, two_lanes, (0, 0, 255))
+                image_combined = draw_lines(image_combined, two_lanes, (0, 0, 255))
             else:
-                image_combined = draw_lines(source_image, two_lanes, (0, 255, 0))
-
-            cv2.imshow('laneviz', image_combined)
-            cv2.waitKey(1)
+                image_combined = draw_lines(image_combined, two_lanes, (0, 255, 0))
 
             img_mutex.release()
             lanes_mutex.release()
+
+            needs_refresh = True
+
+        if has_control:
+            control_mutex.acquire()
+
+            # image center
+            image_center = numpy.array([640/2, 480, 640/2, 0])
+            image_combined = draw_lines(image_combined, numpy.array([image_center]), (128, 128, 128))
+
+            # center line
+            image_combined = draw_lines(image_combined, numpy.array([center_line]), (255, 0, 0))
+
+            # errors from center line to image_center
+            error_line = numpy.array([center_line[0], 480, 640/2, 480])
+            image_combined = draw_lines(image_combined, numpy.array([error_line]), (0, 0, 255))
+
+            # write error values
+            image_combined = put_text(image_combined, "Cont: %+06.2f" % control_value,
+            int(640/2)+19, 480-70, (255, 0, 0))
+            image_combined = put_text(image_combined, "E_ct: %+06.2f" % error_crosstrack,
+            int(640/2)+19, 480-40, (0, 0, 255))
+            image_combined = put_text(image_combined, "E_ang: %+06.2f" % error_angle,
+            int(640/2), 480-10, (0, 0, 255))
+
+            has_control = False
+            control_mutex.release()
+
+            needs_refresh = True
+
+        if needs_refresh:
+            cv2.imshow('laneviz', image_combined)
+            cv2.waitKey(1)
+
 
 
 def rospy_has_topic(topic):

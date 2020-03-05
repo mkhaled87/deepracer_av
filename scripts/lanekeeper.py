@@ -6,19 +6,26 @@ import math
 from simple_pid import PID
 from deepracer_av.msg import RoadLaneInfo
 from deepracer_av.msg import ControlInfo
-#from ctrl_pkg.msg import ServoCtrlMsg
+
+cam_emulation = False
+try:
+    from ctrl_pkg.msg import ServoCtrlMsg
+except ImportError:
+    print("Warning: failed to import ServoCtrlMsg. it seems we are not insidee the AWS DeepRacer.")
+    cam_emulation = True
+
 pid = PID(1, 0.1, 0.05, setpoint=0)
 
 
 # this function applies the input to the AWS DeepRacer
 # angle should be within -0.9 to 0.9
 # throttle should be within -0.9 to 0.9
-#def apply_actions(angle, throttle):
-#    msg = ServoCtrlMsg()
-#    msg.angle = float(angle)
-#    msg.throttle = float(throttle)
-#    md_publisher.publish(msg)
-#    rospy.loginfo('applied angle: %f ; throttle: %f', angle, throttle)
+def apply_actions(angle, throttle):
+    msg = ServoCtrlMsg()
+    msg.angle = float(angle)
+    msg.throttle = float(throttle)
+    md_publisher.publish(msg)
+    rospy.loginfo('applied angle: %f ; throttle: %f', angle, throttle)
 
 
 def compute_control(line_lane_left, line_lane_right):
@@ -27,38 +34,43 @@ def compute_control(line_lane_left, line_lane_right):
 
     # the center line is our control indicator
     # we need to keep it vertical (angle_error == 0)
-    angle_error = math.atan2(
+    # and we need to keep it in the center (crosstrack_error = 0)
+    x_bottom = center_line.reshape(4)[0]
+    crosstrack_error = x_bottom - (640/2)
+    angle_error = math.degrees(math.atan2(
         center_line[2] - center_line[0],
-        center_line[1] - center_line[3])
+        center_line[1] - center_line[3]))
 
-    angle_error = math.degrees(angle_error)
-    if(angle_error <= 2):
-        angle_error = 0
     control = pid(angle_error)
-    return control, angle_error, center_line
+    return control, angle_error, crosstrack_error, center_line
 
 
 def control_cb(data):
     right = data.line_latest_valid_right_border
     left = data.line_latest_valid_left_border
-    control, angle_error, center_line = compute_control(left, right)
+    control, angle_error, crosstrack_error, center_line = compute_control(left, right)
 
     # publish on a topic
     ret_msg = ControlInfo()
     ret_msg.lane_center_line = center_line
     ret_msg.error_angle = angle_error
+    ret_msg.error_crosstrack = crosstrack_error
     ret_msg.pid_control = control
     control_pub.publish(ret_msg)
 
     # apply control
     # fixed throttle: 0.4
-    #apply_actions(control, 0.4)
+    if not cam_emulation:
+        apply_actions(control, 0.4)
 
 
 if __name__ == '__main__':
     try:
         control_pub = rospy.Publisher('av_control', ControlInfo, queue_size=10)
-        #md_publisher = rospy.Publisher('manual_drive', ServoCtrlMsg, queue_size=10)
+
+        if not cam_emulation:
+            md_publisher = rospy.Publisher('manual_drive', ServoCtrlMsg, queue_size=10)
+
         rospy.init_node('lanekeeper', anonymous=False)
         image_sub = rospy.Subscriber("road_lanes", RoadLaneInfo, control_cb)
         rospy.loginfo("Started the lanekeeper controller node. We wait" +
