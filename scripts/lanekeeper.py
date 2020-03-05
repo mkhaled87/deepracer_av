@@ -11,10 +11,11 @@ cam_emulation = False
 try:
     from ctrl_pkg.msg import ServoCtrlMsg
 except ImportError:
-    print("Warning: failed to import ServoCtrlMsg. it seems we are not insidee the AWS DeepRacer.")
+    print("Warning: failed to import ServoCtrlMsg. it seems we" +
+        "are not insidee the AWS DeepRacer.")
     cam_emulation = True
 
-pid = PID(1, 0.1, 0.05, setpoint=0)
+pid = PID(10, 0.1, 0.05, setpoint=0)
 
 
 # this function applies the input to the AWS DeepRacer
@@ -41,7 +42,26 @@ def compute_control(line_lane_left, line_lane_right):
         center_line[2] - center_line[0],
         center_line[1] - center_line[3]))
 
-    control = pid(angle_error)
+    # scaling/thresholding the cross_track error [max value = half-width of the image]
+    crosstrack_error = crosstrack_error/(640/2)
+    if crosstrack_error > 1.0:
+        crosstrack_error = 1.0
+    if crosstrack_error < -1.0:
+        crosstrack_error = -1.0
+
+    # scaling/thresholding the angle error [max value = 45]
+    angle_error = angle_error/45.0
+    if angle_error > 1.0:
+        angle_error = 1.0
+    if angle_error < -1.0:
+        angle_error = -1.0
+
+    # combine the two errors with wiights
+    w_crosstrack = 0.7
+    w_angle = 0.3
+    error = w_crosstrack*crosstrack_error + w_angle*angle_error
+
+    control = pid(error)
     return control, angle_error, crosstrack_error, center_line
 
 
