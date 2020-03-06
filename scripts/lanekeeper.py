@@ -81,7 +81,10 @@ def control_cb(data):
     # apply control
     # fixed throttle: 0.4
     if not cam_emulation:
-        apply_actions(control, 0.4)
+        if right or left:
+            apply_actions(control, 0.5)
+        else:
+            apply_actions(0.0, 0.0)
 
 
 if __name__ == '__main__':
@@ -99,5 +102,6 @@ if __name__ == '__main__':
             "the control signal directly to the /actionproxy node.")
 
         rospy.spin()
+        apply_actions(0.0, 0.0)
     except rospy.ROSInterruptException:
         pass
