@@ -42,7 +42,8 @@ def compute_control(line_lane_left, line_lane_right):
         center_line[2] - center_line[0],
         center_line[1] - center_line[3]))
 
-    # scaling/thresholding the cross_track error [max value = half-width of the image]
+    # scaling/thresholding the cross_track error
+    # [max value = half-width of the image]
     crosstrack_error = crosstrack_error/(640/2)
     if crosstrack_error > 1.0:
         crosstrack_error = 1.0
@@ -68,7 +69,8 @@ def compute_control(line_lane_left, line_lane_right):
 def control_cb(data):
     right = data.line_latest_valid_right_border
     left = data.line_latest_valid_left_border
-    control, angle_error, crosstrack_error, center_line = compute_control(left, right)
+    control, angle_error, crosstrack_error, center_line = compute_control(
+        left, right)
 
     # publish on a topic
     ret_msg = ControlInfo()
