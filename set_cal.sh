@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source /opt/aws/deepracer/setup.sh
-source ~/catkin_ws/devel/setup.sh
-
 # calibrating
 # rosservice call /set_car_cal calType max mid min polarity
 rosservice call /set_car_cal -- 0 1830000 1540000 1290000 1
