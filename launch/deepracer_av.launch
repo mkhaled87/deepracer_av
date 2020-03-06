@@ -7,4 +7,7 @@
   <!-- lanekeeper -->
   <node name="lanekeeper" pkg="deepracer_av" type="lanekeeper.py" respawn="true"/>
 
+  <!-- lane visualizer-->
+  <node name="lane_visualizer" pkg="deepracer_av" type="lane_visualizer.py" respawn="true"/>
+
 </launch>

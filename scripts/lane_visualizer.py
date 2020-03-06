@@ -35,9 +35,12 @@ def put_text(image, text, pos_x, pos_y, color):
     # Line thickness of 2 px
     thickness = 1
 
-    image = cv2.putText(image, text, org, font, fontScale, color, thickness, cv2.LINE_AA)
+    image = cv2.putText(
+        image, text, org, font,
+        fontScale, color, thickness, cv2.LINE_AA)
 
     return image
+
 
 # plots lines on the image with some color
 def draw_lines(image, lines, color):
@@ -45,7 +48,9 @@ def draw_lines(image, lines, color):
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line.reshape(4)
-            cv2.line(lane_image, (int(x1), int(y1)), (int(x2), int(y2)), color, 5)
+            cv2.line(
+                lane_image,
+                (int(x1), int(y1)), (int(x2), int(y2)), color, 5)
 
     return cv2.addWeighted(image, 0.8, lane_image, 1.0, 1.0)
 
@@ -110,6 +115,22 @@ def detected_lanes_callback(data):
     return
 
 
+def control_value_to_arrow(control_value):
+    multiplier = 2
+    if control_value > 0:
+        sym = "<"
+        num = int(control_value*multiplier)
+    else:
+        sym = ">"
+        num = int(-1*control_value*multiplier)
+
+    ret = ""
+    for x in range(0, num):
+        ret += sym
+
+    return ret
+
+
 def visualize_lanes():
     global OldLanes
     global image_detected
@@ -136,9 +157,11 @@ def visualize_lanes():
             lanes_mutex.acquire()
 
             if OldLanes:
-                image_combined = draw_lines(image_combined, two_lanes, (0, 0, 255))
+                image_combined = draw_lines(
+                    image_combined, two_lanes, (0, 0, 255))
             else:
-                image_combined = draw_lines(image_combined, two_lanes, (0, 255, 0))
+                image_combined = draw_lines(
+                    image_combined, two_lanes, (0, 255, 0))
 
             img_mutex.release()
             lanes_mutex.release()
@@ -150,22 +173,40 @@ def visualize_lanes():
 
             # image center
             image_center = numpy.array([640/2, 480, 640/2, 0])
-            image_combined = draw_lines(image_combined, numpy.array([image_center]), (128, 128, 128))
+            image_combined = draw_lines(
+                image_combined, numpy.array([image_center]), (128, 128, 128))
 
             # center line
-            image_combined = draw_lines(image_combined, numpy.array([center_line]), (255, 0, 0))
+            image_combined = draw_lines(
+                image_combined, numpy.array([center_line]), (255, 0, 0))
 
             # errors from center line to image_center
             error_line = numpy.array([center_line[0], 480, 640/2, 480])
-            image_combined = draw_lines(image_combined, numpy.array([error_line]), (0, 0, 255))
+            image_combined = draw_lines(
+                image_combined, numpy.array([error_line]), (0, 0, 255))
+
+            # control values
+            image_combined = put_text(
+                image_combined, "Cont: %+06.2f" % control_value,
+                int(640/2)+19, 480-70, (255, 0, 0))
+
+            control_arrows = control_value_to_arrow(control_value)
+            if control_value > 0:
+                arrows_shift = -5 - 17*len(control_arrows)
+            else:
+                arrows_shift = 5
+
+            image_combined = put_text(
+                image_combined, control_arrows,
+                int(640/2) + arrows_shift, 30, (255, 0, 0))
 
             # write error values
-            image_combined = put_text(image_combined, "Cont: %+06.2f" % control_value,
-            int(640/2)+19, 480-70, (255, 0, 0))
-            image_combined = put_text(image_combined, "E_ct: %+06.2f" % error_crosstrack,
-            int(640/2)+19, 480-40, (0, 0, 255))
-            image_combined = put_text(image_combined, "E_ang: %+06.2f" % error_angle,
-            int(640/2), 480-10, (0, 0, 255))
+            image_combined = put_text(
+                image_combined, "E_ct: %+06.2f" % error_crosstrack,
+                int(640/2)+19, 480-40, (0, 0, 255))
+            image_combined = put_text(
+                image_combined, "E_ang: %+06.2f" % error_angle,
+                int(640/2), 480-10, (0, 0, 255))
 
             has_control = False
             control_mutex.release()
@@ -175,7 +216,6 @@ def visualize_lanes():
         if needs_refresh:
             cv2.imshow('laneviz', image_combined)
             cv2.waitKey(1)
-
 
 
 def rospy_has_topic(topic):
@@ -190,14 +230,17 @@ def rospy_has_topic(topic):
 if __name__ == '__main__':
     try:
         if(rospy_has_topic('/video_mjpeg') and rospy_has_topic('/road_lanes')):
-            image_sub = rospy.Subscriber("video_mjpeg", Image, source_img_callback)
-            lanes_sub = rospy.Subscriber("road_lanes", RoadLaneInfo, detected_lanes_callback)
-            control_sub = rospy.Subscriber("av_control", ControlInfo, control_callback)
+            image_sub = rospy.Subscriber(
+                "video_mjpeg", Image, source_img_callback)
+            lanes_sub = rospy.Subscriber(
+                "road_lanes", RoadLaneInfo, detected_lanes_callback)
+            control_sub = rospy.Subscriber(
+                "av_control", ControlInfo, control_callback)
             bridge = CvBridge()
             rospy.init_node('lane_visualizer', anonymous=False)
             rospy.loginfo("Started the lane visualizer")
             visualize_lanes()
-        
+
         else:
             rospy.loginfo("The topics /video_mjpeg and/or /road_lanes \
                 are not available. Please launch the corresponding \

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- camera_emulator -->
+    <node name="camera_emulator" pkg="deepracer_av" type="camera_emulator.py" respawn="true"/>
+
+    <!-- lane detector -->
+    <node name="lanedetector" pkg="deepracer_av" type="lanedetector.py" respawn="true"/>
+
+    <!-- lane keeper -->
+    <node name="lanekeeper" pkg="deepracer_av" type="lanekeeper.py" respawn="true"/>
+
+    <!-- lane visualizer-->
+    <node name="lane_visualizer" pkg="deepracer_av" type="lane_visualizer.py" respawn="true"/>
+
+</launch>
