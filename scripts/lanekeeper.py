@@ -81,10 +81,7 @@ def control_cb(data):
     # apply control
     # fixed throttle: 0.4
     if not cam_emulation:
-        if data.found_right_border or data.found_left_border:
-            apply_actions(control, 0.5)
-        else:
-            apply_actions(0.0, 0.0)
+        apply_actions(control, 0.5)
 
 
 if __name__ == '__main__':
