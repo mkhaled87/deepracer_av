@@ -7,6 +7,10 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from deepracer_av.msg import RoadLaneInfo
 
+line_latest_valid_right_border = []
+line_latest_valid_left_border = []
+
+
 # is a line defined with two points on the left side of an image
 # defined with a hight and width ?
 def is_line_entirly_on_left_side(height, width, line):
@@ -15,6 +19,7 @@ def is_line_entirly_on_left_side(height, width, line):
         return True
     else:
         return False
+
 
 # is a line defined with two points on the right side of an image
 # defined with a hight and width ?
@@ -25,11 +30,13 @@ def is_line_entirly_on_right_side(height, width, line):
     else:
         return False
 
+
 # what part of the image from top to be masked
 # this is important to hide the un-wanted horizon and
 # focus on the ground
 def view_mask_hight(height, width):
     return int(height/3)
+
 
 # A polygon represening the visibility winodw to be used as a mask
 # on the captured image. The mask should ficus on the part of the
@@ -39,7 +46,14 @@ def view_mask(height, width, turn_skew):
     W = width-1
     shoulder_skew = int(turn_skew/2)
     depth = view_mask_hight(height, width)
-    return [(0, H), (W, H), (W, (H-150+shoulder_skew)), (430-turn_skew, depth), (210-turn_skew, depth), ((0), (H-150-shoulder_skew)), (0, H)]
+    return [
+        (0, H),
+        (W, H),
+        (W, (H-150+shoulder_skew)),
+        (430-turn_skew, depth),
+        (210-turn_skew, depth),
+        ((0), (H-150-shoulder_skew)), (0, H)]
+
 
 # creates two-points line from slopw/intercept
 # we limit the lines to start from tgh eimage buttom (hight)
@@ -58,11 +72,15 @@ def make_coordinates(height, width, line_slope_and_intercept):
 def mask_image(image, turn_skew):
     height = image.shape[0]
     width = image.shape[1]
-    polygons = numpy.array([view_mask(height, width, turn_skew)], dtype=numpy.int32)
+    polygons = numpy.array([
+        view_mask(height, width, turn_skew)],
+        dtype=numpy.int32)
+
     mask = numpy.zeros_like(image)
     cv2.fillPoly(mask, polygons, 255)
     masked_image = cv2.bitwise_and(mask, image)
     return masked_image
+
 
 # creates a grayscale-version from the image then enforces a derivative on it.
 # Having a gradient image, those parts with obious change of color can be 
@@ -96,7 +114,6 @@ def get_two_lanes(image, turn_skew):
 
     # mask the image to focus only on the lane area
     image_masked = mask_image(image_grad, turn_skew)
-    image_masked
 
     # extract the lines the the masked region
     lines = cv2.HoughLinesP(image_masked, 2, numpy.pi/180.0, 100,
@@ -144,8 +161,6 @@ def get_two_lanes(image, turn_skew):
     return has_left, has_right, left_lane.tolist(), right_lane.tolist()
 
 
-line_latest_valid_right_border = []
-line_latest_valid_left_border = []
 def lane_detection_callback(data):
 
     global line_latest_valid_right_border

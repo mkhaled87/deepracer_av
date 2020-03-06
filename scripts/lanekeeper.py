@@ -15,7 +15,7 @@ except ImportError:
         "are not insidee the AWS DeepRacer.")
     cam_emulation = True
 
-pid = PID(10, 0.1, 0.05, setpoint=0)
+pid = PID(3, 0.1, 0.05, setpoint=0)
 
 
 # this function applies the input to the AWS DeepRacer

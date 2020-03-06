@@ -116,7 +116,7 @@ def detected_lanes_callback(data):
 
 
 def control_value_to_arrow(control_value):
-    multiplier = 2
+    multiplier = 5
     if control_value > 0:
         sym = "<"
         num = int(control_value*multiplier)
